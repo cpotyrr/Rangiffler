@@ -1,11 +1,10 @@
 <!DOCTYPE HTML>
-<html lang="ru" xmlns:th="https://www.thymeleaf.org" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="ru">
 <head>
     <title>Register to Rangiffler</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" th:href="@{images/favicon.ico}"/>
-    <link href="../static/styles/styles.css" th:href="@{styles/styles.css}" rel="stylesheet"
-          type="text/css"/>
+    <link rel="icon" href="{{ url_for('static', path='images/favicon.ico') }}"/>
+    <link href="{{ url_for('static', path='styles/styles.css') }}" rel="stylesheet" type="text/css"/>
 </head>
 <body>
 <main class="content">
@@ -15,44 +14,31 @@
             <h1 class="header">
                 <span class="header__accent">R</span>angiffler
             </h1>
-            <img class="header__logo" src="./../static/images/deer-logo.svg" width="90" th:src="@{images/deer-logo.svg}"
-                 alt="Rangiffler logo"/>
-            <form th:if="${username == null}" class="form" id="register-form" th:object="${registrationModel}"
-                  action="/register" th:action="@{/register}"
-                  method="post">
+            <img class="header__logo" src="{{ url_for('static', path='images/deer-logo.svg') }}" width="90" alt="Rangiffler logo"/>
+            <form class="form" id="register-form" action="/register" method="post">
+                {% if error %}
+                <div class="form__error">{{ error }}</div>
+                {% endif %}
                 <label class="form__label">Username
-                    <input class="form__input" type="text" id="username" th:field="*{username}" name="username"
+                    <input class="form__input" type="text" id="username" name="username"
                            placeholder="Type your username" required/>
-                    <span class="form__error" th:if="${#fields.hasErrors('username')}"
-                          th:errors="*{username}"></span>
                 </label>
                 <label class="form__label">Password
                     <input class="form__input" type="password" id="password" name="password"
-                           th:field="*{password}" placeholder="Type your password" required/>
+                           placeholder="Type your password" required/>
                     <button type="button" class="form__password-button" id="passwordBtn"></button>
-                    <span class="form__error" th:if="${#fields.hasErrors('password')}"
-                          th:errors="*{password}"></span>
                 </label>
                 <label class="form__label">Submit Password
                     <input class="form__input" type="password" id="passwordSubmit" name="passwordSubmit"
-                           th:field="*{passwordSubmit}" placeholder="Submit your password" required/>
+                           placeholder="Submit your password" required/>
                     <button type="button" class="form__password-button" id="passwordSubmitBtn"></button>
-                    <span class="form__error" th:if="${#fields.hasErrors('passwordSubmit')}"
-                          th:errors="*{passwordSubmit}"></span>
                 </label>
                 <button class="form__submit" type="submit">
                     Sign Up
                 </button>
-                <p class="form__paragraph">Already have an account? <a class="form__link" th:href="@{|${frontUri}|}">Sign
-                    in!</a>
+                <p class="form__paragraph">Already have an account? <a class="form__link" href="/login">Sign in!</a>
                 </p>
             </form>
-            <div class="form" th:unless="${username == null}">
-                <p class="form__paragraph form__paragraph_success">Congratulations! You've registered!</p>
-                <p class="form__paragraph form__paragraph_link">
-                    <a class="form_sign-in" th:href="@{|${frontUri}|}">Sign in!</a>
-                </p>
-            </div>
         </section>
     </div>
 </main>
@@ -83,7 +69,6 @@
 
     passwordButton.addEventListener("click", handlePasswordButtonClick);
     passwordSubmitButton.addEventListener("click", handleSubmitPasswordButtonClick);
-
 </script>
 </body>
 </html>

@@ -1,13 +1,22 @@
 server:
-  port: 9000
+  port: 8080
 
 spring:
   application:
-    name: rangiffler-auth
-  mvc:
-    log-request-details: true
+    name: gateway
+  graphql:
+    graphiql:
+      enabled: true
+    schema:
+      introspection:
+        enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: 'http://127.0.0.1:9000'
   datasource:
-    url: 'jdbc:mysql://127.0.0.1:3306/rangiffler-auth?serverTimezone=UTC&createDatabaseIfNotExist=true'
+    url: 'jdbc:mysql://127.0.0.1:3306/gateway?serverTimezone=UTC&createDatabaseIfNotExist=true'
     hikari:
       connection-timeout: 20000
       minimum-idle: 10
@@ -21,8 +30,8 @@ spring:
     enabled: true
     baseline-on-migrate: true
     baseline-version: 0
-    schemas: rangiffler-auth
-    locations: classpath:db/migration/rangiffler-auth
+    schemas: gateway
+    locations: classpath:db/migration/gateway
   jpa:
     hibernate:
       ddl-auto: none
@@ -42,9 +51,6 @@ logging:
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
-    org.springframework.boot.autoconfigure: DEBUG
 
 rangiffler-front:
   base-uri: 'http://127.0.0.1:3001'
-rangiffler-auth:
-  base-uri: 'http://127.0.0.1:9000'

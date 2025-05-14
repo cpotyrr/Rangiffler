@@ -1,39 +1,18 @@
-HELP.md
-.gradle
-build/**
-!gradle/wrapper/gradle-wrapper.jar
-!gradle/wrapper/gradle-wrapper.properties
-!**/src/main/**/build/
-!**/src/test/**/build/
+### virtual environment for python ###
+.rangiffler/
 
-### STS ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-bin/
-!**/src/main/**/bin/
-!**/src/test/**/bin/
+.idea/
 
-### IntelliJ IDEA ###
-.idea
-*.iws
-*.iml
-*.ipr
-out/
-!**/src/main/**/out/
-!**/src/test/**/out/
+### Python ###
+__pycache__/
+*.py[cod]
+*$py.class
 
-### NetBeans ###
-/nbproject/private/
-/nbbuild/
-/dist/
-/nbdist/
-/.nb-gradle/
+# Distribution / packaging
+*.egg-info/
+dist/
+build/
 
-### VS Code ###
-.vscode/
-
+# Logs
+*.log
+npm-debug.log*
