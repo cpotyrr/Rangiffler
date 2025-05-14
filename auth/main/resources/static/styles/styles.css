@@ -71,7 +71,7 @@ body {
 .main__hero {
     background-color: var(--color-ligth);
     opacity: 0.8;
-    background-image: url("./../images/forest.jpg");
+    background-image: url("../images/forest.jpg");
     background-position: center;
     background-size: cover;
     width: 100%;
@@ -207,7 +207,7 @@ body {
     }
 
     .main__hero {
-        background-image: url("./../images/forest_small.jpg");
+        background-image: url("../images/forest_small.jpg");
         background-position-y: 60%;
     }
 }
