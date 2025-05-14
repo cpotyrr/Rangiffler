@@ -1,0 +1,102 @@
+scalar Date
+
+type Query {
+    countries: [Country!]!
+    user: User!
+    users(page:Int, size:Int, searchQuery:String): UserConnection
+    feed(withFriends: Boolean!): Feed!
+}
+
+type Mutation {
+    user(input: UserInput!): User!
+    photo(input: PhotoInput!): Photo!
+    deletePhoto(id: ID!): Boolean
+    friendship(input: FriendshipInput!): User!
+}
+
+type User {
+    id: ID!
+    username: String!
+    firstname: String
+    surname: String
+    avatar: String
+    friendStatus: FriendStatus
+    friends(page:Int, size:Int, searchQuery:String): UserConnection
+    incomeInvitations(page:Int, size:Int, searchQuery:String): UserConnection
+    outcomeInvitations(page:Int, size:Int, searchQuery:String): UserConnection
+    location: Country
+}
+
+type Feed {
+    username: String!
+    withFriends: Boolean!
+    photos(page:Int, size:Int): PhotoConnection
+    stat: [Stat!]
+}
+
+type Stat {
+    count: Int!
+    country: Country!
+}
+
+type Photo {
+    id: ID!
+    src: String!
+    country: Country!
+    description: String!
+    creationDate: Date!
+    likes: Likes
+}
+
+type Likes {
+    total: Int!
+    likes: [Like!]
+}
+
+type Like {
+    user: ID!
+    username: String!
+    creationDate: Date!
+}
+
+type Country {
+    flag: String!
+    code: String!
+    name: String!
+}
+
+input FriendshipInput {
+    user: ID!
+    action: FriendshipAction!
+}
+
+input PhotoInput {
+    id: ID
+    src: String
+    country: CountryInput
+    description: String
+    like: LikeInput
+}
+
+input LikeInput {
+    user: ID!
+}
+
+input UserInput {
+    firstname: String
+    surname: String
+    avatar: String
+    location: CountryInput
+}
+
+input CountryInput {
+    code: String!
+}
+
+enum FriendshipAction {
+    ADD, ACCEPT, REJECT, DELETE
+}
+
+enum FriendStatus {
+    NOT_FRIEND, INVITATION_SENT, INVITATION_RECEIVED, FRIEND
+}
