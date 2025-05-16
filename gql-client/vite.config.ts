@@ -7,8 +7,11 @@ export default defineConfig(({mode}) => {
     return defineConfig({
         plugins: [react()],
         server: {
-            host: process.env.VITE_FRONT_HOST,
-            port: 3001,
+            host: '0.0.0.0',
+            port: 3000,
+            watch: {
+                usePolling: true
+            }
         },
     });
 });

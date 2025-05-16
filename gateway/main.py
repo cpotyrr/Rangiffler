@@ -1,40 +1,51 @@
 # main.py
+import os
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
+from fastapi.middleware.cors import CORSMiddleware
+from gateway.gateway_app.config.settings import settings
 
 app = FastAPI()
 
-# Настройки должны совпадать с Auth Service
-SECRET_KEY = "supersecretkey"
-ALGORITHM = "HS256"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:9000/token")
+# CORS middleware configuration
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.FRONTEND_URL],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
+# JWT configuration
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://localhost:8000")
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Проверка токена
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        detail="Invalid token",
+        detail="Invalid authentication credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
-        return username
     except JWTError:
         raise credentials_exception
-
+    return username
 
 # Корень
 @app.get("/")
-def home():
-    return {"message": "Welcome to Rangiffler!"}
+async def root():
+    return {"message": "Welcome to Rangiffler Gateway"}
 
-
-# Пример защищённого эндпоинта
-@app.get("/protected")
-def protected_route(username: str = Depends(get_current_user)):
-    return {"message": f"Hello {username}, you are authorized!"}
+# Защищённый эндпоинт
+@app.get("/api/protected")
+async def protected_route(current_user: str = Depends(get_current_user)):
+    return {"message": f"Hello {current_user}"}

@@ -1,5 +1,5 @@
 # auth/models.py
-from sqlalchemy import Column, String, Boolean, ForeignKey
+from sqlalchemy import Column, String, Boolean, ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from .database import Base
 import uuid
@@ -8,11 +8,13 @@ class User(Base):
     __tablename__ = "user"
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     username = Column(String(50), unique=True, index=True)
+    email = Column(String(100), unique=True, index=True)
     password = Column(String(255))
     enabled = Column(Boolean, default=True)
     account_non_expired = Column(Boolean, default=True)
     account_non_locked = Column(Boolean, default=True)
     credentials_non_expired = Column(Boolean, default=True)
+    created_date = Column(DateTime(timezone=True))
 
 class Authority(Base):
     __tablename__ = "authority"

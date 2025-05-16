@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  auth_db:
+    image: postgres:17.5
+    env_file:
+      - .env
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - rangiffler-network
+
+  auth_service:
+    build:
+      context: .
+      dockerfile: auth/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${AUTH_SERVICE_PORT}:9000"
+    volumes:
+      - ./auth:/app/auth
+    depends_on:
+      - auth_db
+    networks:
+      - rangiffler-network
+
+  gateway:
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${GATEWAY_PORT}:8000"
+    volumes:
+      - ./gateway:/app/gateway
+    depends_on:
+      - auth_service
+    networks:
+      - rangiffler-network
+
+  frontend:
+    image: node:18
+    working_dir: /app
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    volumes:
+      - ./gql-client:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev | tee /app/frontend.log"
+    depends_on:
+      - gateway
+    networks:
+      - rangiffler-network
+
+volumes:
+  postgres_data:
+
+networks:
+  rangiffler-network:
+    driver: bridge
