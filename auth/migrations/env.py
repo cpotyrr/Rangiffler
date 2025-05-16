@@ -1,10 +1,14 @@
 import os
+import sys
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from alembic import context
+
+# Add the parent directory to Python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.models import Base
 
@@ -27,7 +31,13 @@ target_metadata = Base.metadata
 # ... etc.
 
 def get_url():
-    return "postgresql://rangiffler:rangiffler@localhost:5432/auth_db"
+    user = os.getenv("POSTGRES_USER", "rangiffler")
+    password = os.getenv("POSTGRES_PASSWORD", "rangiffler")
+    # Use localhost instead of auth_db for local migrations
+    host = "localhost"  # Hardcode localhost for local migrations
+    port = os.getenv("POSTGRES_PORT", "5432")
+    db = os.getenv("POSTGRES_DB", "auth_db")
+    return f"postgresql://{user}:{password}@{host}:{port}/{db}"
 
 def run_migrations_offline() -> None:
     """Run migrations in 'offline' mode.
