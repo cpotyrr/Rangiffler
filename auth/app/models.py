@@ -1,7 +1,7 @@
 # auth/models.py
-from sqlalchemy import Column, String, Boolean, ForeignKey
+from sqlalchemy import Column, String, Boolean, ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import UUID
-from database import Base
+from .database import Base
 import uuid
 
 class User(Base):
@@ -13,6 +13,7 @@ class User(Base):
     account_non_expired = Column(Boolean, default=True)
     account_non_locked = Column(Boolean, default=True)
     credentials_non_expired = Column(Boolean, default=True)
+    created_date = Column(DateTime(timezone=True))
 
 class Authority(Base):
     __tablename__ = "authority"

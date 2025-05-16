@@ -12,9 +12,11 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from database import get_db, engine
-from models import Base, User
-from schemas import UserCreate, Token
+from app.config.settings import FRONTEND_URL, STATIC_DIR
+from app.controllers.auth_controller import router as auth_router
+from app.database import engine, get_db
+from app.models import Base, User
+from app.schemas import UserCreate, Token
 
 # Создаём таблицы в БД
 Base.metadata.create_all(bind=engine)
@@ -32,13 +34,13 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[os.getenv("FRONTEND_URL")],  # URL вашего фронтенда из переменных окружения
+    allow_origins=[FRONTEND_URL],
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
-# отдача статических файлов
-app.mount("/static", StaticFiles(directory="auth/main/resources/static"), name="static")
+# Статические файлы
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Настройка шаблонов
 templates = Jinja2Templates(directory="auth/main/resources/templates")
@@ -338,3 +340,6 @@ def read_current_user(token: str = Depends(oauth2_scheme)):
         return {"username": username}
     except JWTError:
         raise credentials_exception
+
+# Подключаем роуты
+app.include_router(auth_router)
