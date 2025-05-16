@@ -4,9 +4,15 @@ from fastapi.templating import Jinja2Templates
 
 from app.config.settings import TEMPLATES_DIR, FRONTEND_URL
 from app.services.auth_service import AuthService
+from app.config.jwt_config import JWT_JWK
+from app.security.jwks import create_jwks
 
 router = APIRouter(tags=["oauth"])
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
+
+@router.get("/.well-known/jwks.json")
+async def jwks():
+    return JSONResponse(content=create_jwks(JWT_JWK))
 
 @router.get("/oauth2/authorize")
 async def authorize(
@@ -112,4 +118,4 @@ async def login_form(
                 }
             },
             status_code=500
-        ) 
+        )

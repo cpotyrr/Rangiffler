@@ -1,48 +1,48 @@
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric import rsa
 from cryptography.hazmat.backends import default_backend
-import base64
 import json
-from app.config.jwt_config import JWT_ALGORITHM
+import base64
 
-# Generate RSA key pair (this should be done once and stored securely in production)
-private_key = rsa.generate_private_key(
-    public_exponent=65537,
-    key_size=2048,
-    backend=default_backend()
-)
-public_key = private_key.public_key()
+def generate_keys():
+    # Generate RSA key pair
+    private_key = rsa.generate_private_key(
+        public_exponent=65537,
+        key_size=2048,
+        backend=default_backend()
+    )
+    public_key = private_key.public_key()
 
-def int_to_base64(value: int) -> str:
-    """Convert an integer to a base64url-encoded string"""
-    value_hex = format(value, 'x')
-    # Ensure even length
-    if len(value_hex) % 2 == 1:
-        value_hex = '0' + value_hex
-    value_bytes = bytes.fromhex(value_hex)
-    return base64.urlsafe_b64encode(value_bytes).rstrip(b'=').decode('ascii')
+    # Get private key in PEM format
+    pem_private = private_key.private_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PrivateFormat.PKCS8,
+        encryption_algorithm=serialization.NoEncryption()
+    )
 
-def get_jwks() -> dict:
-    """Generate JWKS containing the public key"""
-    public_numbers = public_key.public_numbers()
-    
+    # Get public key in PEM format
+    pem_public = public_key.public_bytes(
+        encoding=serialization.Encoding.PEM,
+        format=serialization.PublicFormat.SubjectPublicKeyInfo
+    )
+
+    # Get public key components for JWK
+    numbers = public_key.public_numbers()
+    e = base64.urlsafe_b64encode(numbers.e.to_bytes((numbers.e.bit_length() + 7) // 8, byteorder='big')).rstrip(b'=')
+    n = base64.urlsafe_b64encode(numbers.n.to_bytes((numbers.n.bit_length() + 7) // 8, byteorder='big')).rstrip(b'=')
+
     return {
-        "keys": [
-            {
-                "kty": "RSA",
-                "kid": "auth-key-1",  # Key ID
-                "use": "sig",         # Signature
-                "alg": JWT_ALGORITHM,
-                "n": int_to_base64(public_numbers.n),  # Modulus
-                "e": int_to_base64(public_numbers.e)   # Exponent
-            }
-        ]
+        'private_key': pem_private,
+        'public_key': pem_public,
+        'jwk': {
+            'kty': 'RSA',
+            'kid': '1',
+            'n': n.decode('ascii'),
+            'e': e.decode('ascii'),
+            'alg': 'RS256',
+            'use': 'sig'
+        }
     }
 
-def get_private_key() -> rsa.RSAPrivateKey:
-    """Get the private key for signing"""
-    return private_key
-
-def get_public_key() -> rsa.RSAPublicKey:
-    """Get the public key for verification"""
-    return public_key 
+def create_jwks(jwk):
+    return {'keys': [jwk]} 

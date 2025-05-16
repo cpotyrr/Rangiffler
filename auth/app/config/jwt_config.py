@@ -1,8 +1,12 @@
 import os
+from app.security.jwks import generate_keys
 
-# JWT settings
-JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
-JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+# Generate RSA keys for JWKS
+keys = generate_keys()
+JWT_PRIVATE_KEY = keys['private_key']
+JWT_PUBLIC_KEY = keys['public_key']
+JWT_JWK = keys['jwk']
+JWT_ALGORITHM = "RS256"
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 # OAuth2 settings
