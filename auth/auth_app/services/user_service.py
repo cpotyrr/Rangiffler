@@ -5,7 +5,7 @@ from ..interfaces.user_service import IUserService
 from ..models import User
 from ..schemas import UserRegistrationDTO
 from ..security.password import get_password_hash, verify_password
-from app.database import get_db
+from auth_app.database import get_db
 
 class UserService(IUserService):
     def __init__(self, db: Session = Depends(get_db)):
@@ -18,8 +18,11 @@ class UserService(IUserService):
         if registration_data.password != registration_data.password_submit:
             raise ValueError("Passwords do not match")
             
-        if self.db.query(User).filter(User.username == registration_data.username).first():
+        if self.username_exists(registration_data.username):
             raise ValueError("Username already exists")
+            
+        if self.email_exists(registration_data.email):
+            raise ValueError("Email already exists")
 
     def create_user(self, registration_data: UserRegistrationDTO) -> User:
         self.validate_registration(registration_data)
@@ -28,6 +31,7 @@ class UserService(IUserService):
         hashed_password = get_password_hash(registration_data.password)
         new_user = User(
             username=registration_data.username,
+            email=registration_data.email,
             password=hashed_password,
             enabled=True,
             account_non_expired=True,
@@ -52,4 +56,13 @@ class UserService(IUserService):
         return user
 
     def get_user_by_username(self, username: str) -> User | None:
-        return self.db.query(User).filter(User.username == username).first() 
+        return self.db.query(User).filter(User.username == username).first()
+        
+    def get_user_by_email(self, email: str) -> User | None:
+        return self.db.query(User).filter(User.email == email).first()
+        
+    def username_exists(self, username: str) -> bool:
+        return self.db.query(User).filter(User.username == username).first() is not None
+        
+    def email_exists(self, email: str) -> bool:
+        return self.db.query(User).filter(User.email == email).first() is not None 

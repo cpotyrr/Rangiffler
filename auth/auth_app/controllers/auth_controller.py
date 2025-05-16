@@ -3,10 +3,10 @@ from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.templating import Jinja2Templates
 
-from app.config.settings import TEMPLATES_DIR
-from app.schemas import UserCreate, Token, UserRegistrationDTO
-from app.services.auth_service import AuthService
-from app.services.user_service import UserService
+from auth_app.config.settings import TEMPLATES_DIR
+from auth_app.schemas import UserCreate, Token, UserRegistrationDTO
+from auth_app.services.auth_service import AuthService
+from auth_app.services.user_service import UserService
 
 router = APIRouter(tags=["auth"])
 templates = Jinja2Templates(directory=TEMPLATES_DIR)

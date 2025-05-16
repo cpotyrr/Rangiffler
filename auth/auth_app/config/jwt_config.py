@@ -1,5 +1,5 @@
 import os
-from app.security.jwks import generate_keys
+from auth_app.security.jwks import generate_keys
 
 # Generate RSA keys for JWKS
 keys = generate_keys()

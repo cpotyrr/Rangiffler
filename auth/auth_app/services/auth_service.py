@@ -3,10 +3,10 @@ from fastapi import Depends
 from jose import JWTError, jwt
 from sqlalchemy.orm import Session
 
-from app.config.jwt_config import JWT_PRIVATE_KEY, JWT_ALGORITHM, JWT_ACCESS_TOKEN_EXPIRE_MINUTES
-from app.database import get_db
-from app.models import User
-from app.security.password import verify_password
+from auth_app.config.jwt_config import JWT_PRIVATE_KEY, JWT_ALGORITHM, JWT_ACCESS_TOKEN_EXPIRE_MINUTES
+from auth_app.database import get_db
+from auth_app.models import User
+from auth_app.security.password import verify_password
 
 class AuthService:
     def __init__(self, db: Session = Depends(get_db)):

@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Form, status
 from fastapi.responses import RedirectResponse, JSONResponse
 from fastapi.templating import Jinja2Templates
 
-from app.config.settings import TEMPLATES_DIR, FRONTEND_URL
-from app.services.auth_service import AuthService
-from app.config.jwt_config import JWT_JWK
-from app.security.jwks import create_jwks
+from auth_app.config.settings import TEMPLATES_DIR, FRONTEND_URL
+from auth_app.services.auth_service import AuthService
+from auth_app.config.jwt_config import JWT_JWK
+from auth_app.security.jwks import create_jwks
 
 router = APIRouter(tags=["oauth"])
 templates = Jinja2Templates(directory=TEMPLATES_DIR)
