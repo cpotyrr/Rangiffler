@@ -1,14 +1,16 @@
 # main.py
+import os
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 
 app = FastAPI()
 
-# Настройки должны совпадать с Auth Service
-SECRET_KEY = "supersecretkey"
-ALGORITHM = "HS256"
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:9000/token")
+# Настройки из переменных окружения
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+AUTH_SERVICE_URL = f"http://{os.getenv('AUTH_SERVICE_HOST')}:{os.getenv('AUTH_SERVICE_PORT')}"
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{AUTH_SERVICE_URL}/token")
 
 
 # Проверка токена

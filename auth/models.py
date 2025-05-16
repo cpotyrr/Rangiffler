@@ -1,7 +1,7 @@
 # auth/models.py
 from sqlalchemy import Column, String, Boolean, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
-from .database import Base
+from database import Base
 import uuid
 
 class User(Base):

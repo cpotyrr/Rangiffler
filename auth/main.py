@@ -1,4 +1,5 @@
 # main.py
+import os
 from datetime import datetime, timedelta, timezone
 
 from fastapi import FastAPI, Depends, HTTPException, status, Form, Request
@@ -11,19 +12,19 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from .database import get_db, engine
-from .models import Base, User
-from .schemas import UserCreate, Token
+from database import get_db, engine
+from models import Base, User
+from schemas import UserCreate, Token
 
 # Создаём таблицы в БД
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-# Настройки JWT
-SECRET_KEY = "supersecretkey"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+# Настройки JWT из переменных окружения
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
@@ -31,7 +32,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 # Middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3001"],  # URL вашего фронтенда
+    allow_origins=[os.getenv("FRONTEND_URL")],  # URL вашего фронтенда из переменных окружения
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )

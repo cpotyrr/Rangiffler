@@ -1,6 +1,7 @@
 ### virtual environment for python ###
 .rangiffler/
 
+.env
 .idea/
 
 ### Python ###
